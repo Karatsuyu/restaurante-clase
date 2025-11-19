@@ -4,8 +4,9 @@
   "description": "Express backend para Restaurante Clase",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
-    
+    "start": "node server.js"
+
+
   },
   "dependencies": {
     "dotenv": "^17.2.3",

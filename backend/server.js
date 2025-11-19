@@ -1,9 +1,10 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import { supabase } from "db.js";
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const { supabase } = require("db.js");
 
 dotenv.config();
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -19,16 +20,20 @@ app.get("/api/dishes", async (req, res) => {
   }
 });
 
-// POST: crear plato
 app.post("/api/dishes", async (req, res) => {
   const { name, price } = req.body;
+
   const { data, error } = await supabase
     .from("dishes")
     .insert([{ name, price }])
     .select();
+
   if (error) return res.status(500).json({ error: error.message });
   res.status(201).json(data[0]);
 });
 
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`✅ Servidor en https://restaurantfs.onrender.com/${PORT}`));
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en puerto ${PORT}`);
+});
