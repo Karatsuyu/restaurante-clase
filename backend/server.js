@@ -1,9 +1,15 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const { supabase } = require("./db.js");
+const { getSupabase } = require("./db.js");
 
 dotenv.config();
+
+const supabase = getSupabase(); // <-- ESTA ES LA FORMA CORRECTA
+
+if (!supabase) {
+  console.warn("❌ Supabase no está inicializado. Revisa SUPABASE_URL y SUPABASE_KEY.");
+}
 
 const app = express();
 app.use(cors());
@@ -23,13 +29,18 @@ app.get("/api/dishes", async (req, res) => {
 app.post("/api/dishes", async (req, res) => {
   const { name, price } = req.body;
 
-  const { data, error } = await supabase
-    .from("dishes")
-    .insert([{ name, price }])
-    .select();
+  try {
+    const { data, error } = await supabase
+      .from("dishes")
+      .insert([{ name, price }])
+      .select();
 
-  if (error) return res.status(500).json({ error: error.message });
-  res.status(201).json(data[0]);
+    if (error) throw error;
+
+    res.status(201).json(data[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 const PORT = process.env.PORT || 3000;
